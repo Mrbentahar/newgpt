@@ -1,634 +1,66 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" class="transition-colors duration-300">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eco-CRM | إدارة نفايات ذكية مدعومة بالذكاء الاصطناعي</title>
+    <title>Eco-CRM | إدارة النفايات الذكية - React App</title>
     
     <!-- 1. تحميل Tailwind CSS JIT CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. تهيئة إعدادات Tailwind (لتحديد الألوان والخطوط) -->
+    <!-- 2. تهيئة إعدادات Tailwind (للألوان والـ Dark Mode) -->
     <script>
         tailwind.config = {
-            darkMode: 'class', // غير مستخدم في هذا الكود لكن يفضل وضعه
+            darkMode: 'class', // تفعيل وضع الظلام عبر الكلاس 'dark' على الـ <html>
             theme: {
                 extend: {
                     colors: {
-                        'primary': '#047857', // Green-700 / أخضر داكن (اللون الأساسي)
-                        'accent': '#38bdf8', // Sky-400 / أزرق سماوي فاتح (لون الذكاء الاصطناعي)
-                        'slate': { // استخدام تدرجات Slate القياسية للألوان الثانوية
-                            50: '#f8fafc',
-                            100: '#f1f5f9',
-                            800: '#1e293b',
-                            900: '#0f172a',
+                        'green': {
+                            50: '#F1F7F1',
+                            600: '#1B5E20', // الأخضر الأساسي
+                            700: '#154B1A',
+                            900: '#0C2D0E',
+                            950: '#081E09',
                         },
-                        'green': { // تدرجات للاستدامة
-                            400: '#4ade80',
-                            800: '#065f46',
+                        'red': {
+                            500: '#EF4444',
+                            600: '#DC2626', // للـ CTA النهائي
+                            700: '#B91C1C',
+                        },
+                        'yellow': {
+                            300: '#FDE047',
+                            400: '#FACC15',
+                        },
+                        'gray': {
+                            50: '#f9fafb',
+                            // ... (بقية تدرجات الرمادي مُعرّفة ضمنياً في Tailwind)
                         }
                     },
-                    keyframes: {
-                        fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
-                    },
-                    animation: {
-                        fadeInUp: 'fadeInUp 0.8s ease-out forwards',
+                    // تعريف الخطوط (إذا كانت غير موجودة في Inter)
+                    fontFamily: {
+                        sans: ['Inter', 'Tahoma', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .rtl { direction: rtl; }
-        .ltr { direction: ltr; }
-        .transition-all { transition: all 0.3s ease; }
-        
-        /* نمط الرسوم المتحركة على التمرير (محاكاة IntersectionObserver) */
-        .animate-on-scroll { opacity: 0; transform: translateY(20px); }
-        .is-visible { animation: fadeInUp 0.8s ease-out forwards; }
-    </style>
+    <!-- 3. تحميل خطوط Google (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- 4. تحميل مكتبات React و ReactDOM (إصدار الإنتاج لـ CDN) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- 5. تحميل مكتبة الأيقونات (Lucide Icons) -->
+    <script crossorigin src="https://unpkg.com/lucide-react@0.320.0/dist/umd/lucide-react.min.js"></script>
+
 </head>
-<body class="bg-white text-slate-900">
-    <div id="app" class="min-h-screen transition-all">
-        <!-- Navigation -->
-        <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-sm border-b border-slate-100">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-20">
-                    <!-- Logo (Eco-CRM) -->
-                    <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="setView('home')">
-                        <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v3a2 2 0 0 0 2 2h3"/><path d="M21 3v3a2 2 0 0 0 -2 2h-3"/><path d="M3 21v-3a2 2 0 0 1 2 -2h3"/><path d="M21 21v-3a2 2 0 0 1 -2 -2h-3"/><path d="M12 12m-6 0a6 6 0 1 0 12 0a6 6 0 1 0 -12 0"/></svg>
-                        </div>
-                        <span class="font-bold text-xl tracking-tight text-slate-900">Eco-CRM</span>
-                    </div>
+<body class="font-sans antialiased bg-white dark:bg-gray-950 transition-colors duration-300">
+    <!-- حاوية الجذر حيث سيتم عرض تطبيق React بالكامل -->
+    <div id="root"></div>
 
-                    <!-- Desktop Menu -->
-                    <div class="hidden md:flex items-center gap-8">
-                        <button onclick="setView('home')" id="nav-home" class="text-slate-900 font-medium text-sm transition-colors">الرئيسية</button>
-                        <a href="#features" id="nav-features" class="text-slate-500 hover:text-primary transition-colors font-medium text-sm">التحديات</a>
-                        <a href="#solution" id="nav-solution" class="text-slate-500 hover:text-primary transition-colors font-medium text-sm">الحل</a>
-                        <button onclick="setView('contact')" id="nav-contact" class="text-slate-500 hover:text-primary transition-colors font-medium text-sm">تواصل</button>
-                        
-                        <!-- Language Switcher -->
-                        <div class="flex items-center border border-slate-200 rounded-full px-1 p-1">
-                            <button onclick="setLang('en')" class="lang-btn en px-3 py-1 rounded-full text-xs font-bold uppercase transition-all text-slate-400">EN</button>
-                            <button onclick="setLang('ar')" class="lang-btn ar px-3 py-1 rounded-full text-xs font-bold uppercase transition-all bg-primary text-white">AR</button>
-                        </div>
-
-                        <button class="bg-primary text-white px-5 py-2 rounded-full font-medium text-sm hover:bg-green-800 transition-all" id="nav-cta">
-                            ابدأ الآن
-                        </button>
-                    </div>
-
-                    <!-- Mobile Toggle -->
-                    <div class="md:hidden flex items-center gap-4">
-                        <button onclick="toggleMenu()" class="text-slate-600 p-2">
-                             <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <!-- Mobile Menu -->
-            <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 shadow-lg px-4 py-6 space-y-4">
-                <button onclick="setView('home'); toggleMenu();" class="block text-slate-600 font-medium w-full text-right" id="m-nav-home">الرئيسية</button>
-                <a href="#features" class="block text-slate-600 font-medium" onclick="toggleMenu()" id="m-nav-features">التحديات</a>
-                <a href="#solution" class="block text-slate-600 font-medium" onclick="toggleMenu()" id="m-nav-solution">الحل</a>
-                <button onclick="setView('contact'); toggleMenu();" class="block text-slate-600 font-medium w-full text-right" id="m-nav-contact">تواصل</button>
-            </div>
-        </nav>
-
-        <!-- Main Content -->
-        <main id="main-content">
-            <!-- Home View -->
-            <div id="home-view">
-                <!-- Hero Section (Aesthetic Polish: Tech/Green Focus) -->
-                <section id="hero" class="pt-32 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-                    <div class="text-center max-w-4xl mx-auto animate-on-scroll" data-delay="0">
-                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-primary text-xs font-semibold mb-8 uppercase tracking-wide" id="hero-badge">
-                            الجيل الأخضر في الأتمتة
-                        </div>
-                        <h1 class="text-4xl md:text-6xl font-extrabold text-slate-900 leading-[1.1] mb-8 tracking-tight" id="hero-title">
-                            نظام CRM ذكي لـ **إدارة النفايات** بأتمتة كاملة
-                        </h1>
-                        <p class="text-lg md:text-xl text-slate-500 mb-10 leading-relaxed max-w-3xl mx-auto font-light" id="hero-subtitle">
-                            توقف عن الفوضى والمكالمات الضائعة. نظامنا يستقبل الطلبات، يؤتمتها، ويجدولها **24/7** بدون تدخل بشري.
-                        </p>
-                        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-on-scroll" data-delay="200">
-                            <button class="w-full sm:w-auto px-8 py-4 bg-primary text-white rounded-full font-bold hover:bg-green-800 transition-all shadow-lg shadow-primary/30" id="hero-cta-primary" onclick="openChat()">ابدأ الأتمتة الآن</button>
-                            <button onclick="document.getElementById('solution').scrollIntoView({ behavior: 'smooth' });" class="w-full sm:w-auto px-8 py-4 bg-white text-slate-600 border border-slate-200 rounded-full font-medium hover:border-primary transition-all" id="hero-cta-secondary">شاهد النظام بالتفصيل</button>
-                        </div>
-                    </div>
-
-                    <!-- Mini Dashboard / Metrics Section (New Polish) -->
-                    <div class="mt-20 pt-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-center animate-on-scroll" data-delay="400">
-                        <div class="p-4 rounded-xl">
-                            <h3 class="text-3xl md:text-4xl font-extrabold text-primary" id="metric-1-value">99.9%</h3>
-                            <p class="text-xs text-slate-500 uppercase tracking-wider mt-1" id="metric-1-label">وقت تشغيل</p>
-                        </div>
-                        <div class="p-4 rounded-xl">
-                            <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900" id="metric-2-value">10x</h3>
-                            <p class="text-xs text-slate-500 uppercase tracking-wider mt-1" id="metric-2-label">سرعة الاستجابة</p>
-                        </div>
-                        <div class="p-4 rounded-xl">
-                            <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900" id="metric-3-value">0%</h3>
-                            <p class="text-xs text-slate-500 uppercase tracking-wider mt-1" id="metric-3-label">طلبات ضائعة</p>
-                        </div>
-                        <div class="p-4 rounded-xl">
-                            <h3 class="text-3xl md:text-4xl font-extrabold text-accent" id="metric-4-value">24/7</h3>
-                            <p class="text-xs text-slate-500 uppercase tracking-wider mt-1" id="metric-4-label">وكيل آلي</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Tech Logos (Simplified for clarity) -->
-                    <div class="mt-16 border-t border-slate-100 pt-12 grid grid-cols-4 gap-12 text-center opacity-80 animate-on-scroll" data-delay="600">
-                        <!-- Logos are kept simple but linked to Eco-CRM components -->
-                        <div class="flex flex-col items-center gap-2">
-                             <div class="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div>
-                            <span class="font-medium text-slate-500 text-xs uppercase">Chatwoot</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-2">
-                            <div class="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-2 5.27"/><path d="M10 15h0"/><path d="M2 10h0"/></svg></div>
-                            <span class="font-medium text-slate-500 text-xs uppercase">n8n</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-2">
-                            <div class="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/></svg></div>
-                            <span class="font-medium text-slate-500 text-xs uppercase">Typebot</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-2">
-                             <div class="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></div>
-                            <span class="font-medium text-slate-500 text-xs uppercase text-nowrap">WhatsApp API</span>
-                        </div>
-                    </div>
-                </section>
-                
-                <!-- Pain Points Section (New Section from Eco-CRM) -->
-                <section id="features" class="py-24 bg-slate-50 border-t border-slate-100">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div class="mb-16 text-center animate-on-scroll" data-delay="0">
-                            <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4" id="pain-title">التحديات التي يحلها نظامنا</h2>
-                            <p class="text-slate-500 max-w-4xl mx-auto font-light" id="pain-subtitle">نظامنا مصمم لسد الفجوات التي تسببها الطرق التقليدية لإدارة طلبات جمع النفايات.</p>
-                        </div>
-                        <div class="grid lg:grid-cols-4 gap-8">
-                            <!-- Pain Card 1 -->
-                            <div class="bg-white rounded-2xl p-6 border border-red-100 hover:border-red-400 transition-all duration-300 animate-on-scroll" data-delay="100">
-                                <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-600 mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/><path d="M12 21a9 9 0 0 0 9-9 9 9 0 0 0 -9-9 9 9 0 0 0 -9 9 9 9 0 0 0 9 9z"/></svg></div>
-                                <h3 class="text-lg font-bold text-slate-900" id="pain-c1-title">مكالمات لا تتوقف</h3>
-                                <p class="text-slate-500 mt-3 text-sm leading-relaxed" id="pain-c1-desc">فريق خدمة العملاء منهك بالردود المتكررة على نفس الاستفسارات طوال اليوم.</p>
-                            </div>
-                            <!-- Pain Card 2 -->
-                            <div class="bg-white rounded-2xl p-6 border border-red-100 hover:border-red-400 transition-all duration-300 animate-on-scroll" data-delay="200">
-                                <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-600 mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 10h-1l-3-3H9L6 10H5l3-3H7L4 4h16l-3 3h-1l3 3z"/></svg></div>
-                                <h3 class="text-lg font-bold text-slate-900" id="pain-c2-title">طلبات تضيع وتُنسى</h3>
-                                <p class="text-slate-500 mt-3 text-sm leading-relaxed" id="pain-c2-desc">فقدان بعض طلبات الجمع بسبب التسجيل اليدوي أو سوء التواصل الداخلي.</p>
-                            </div>
-                            <!-- Pain Card 3 -->
-                            <div class="bg-white rounded-2xl p-6 border border-red-100 hover:border-red-400 transition-all duration-300 animate-on-scroll" data-delay="300">
-                                <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-600 mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-                                <h3 class="text-lg font-bold text-slate-900" id="pain-c3-title">رد متأخر وغير احترافي</h3>
-                                <p class="text-slate-500 mt-3 text-sm leading-relaxed" id="pain-c3-desc">تأخر الرد على العملاء خارج أوقات العمل الرسمية، مما يقلل من جودة الخدمة.</p>
-                            </div>
-                            <!-- Pain Card 4 -->
-                            <div class="bg-white rounded-2xl p-6 border border-red-100 hover:border-red-400 transition-all duration-300 animate-on-scroll" data-delay="400">
-                                <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-600 mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9.17a3 3 0 0 0-4.24-4.24l-9.19 9.19a2 2 0 0 0-.58 1.25v2.42a1 1 0 0 0 1 1h2.42a2 2 0 0 0 1.25-.58L17 9.17Z"/></svg></div>
-                                <h3 class="text-lg font-bold text-slate-900" id="pain-c4-title">عملاء غير راضين</h3>
-                                <p class="text-slate-500 mt-3 text-sm leading-relaxed" id="pain-c4-desc">الشعور بأن النظام غير متطور وعدم القدرة على تلبية الطلبات بسرعة وكفاءة.</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Solution & Steps Section (Aesthetic Polish: Dark Background, Accent Rings) -->
-                <section id="solution" class="py-24 bg-slate-900 text-white border-t border-slate-800">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div class="mb-16 text-center animate-on-scroll" data-delay="0">
-                            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4" id="solution-title">الحل: نظام Eco-CRM ذكي متكامل</h2>
-                            <p class="text-slate-400 max-w-4xl mx-auto font-light" id="solution-subtitle">أتمتة المحادثات مع Chatwoot، سير العمل مع n8n، وواجهات البوت مع Typebot.</p>
-                        </div>
-                        
-                        <!-- Solution Cards -->
-                        <div class="grid lg:grid-cols-3 gap-8 mb-20">
-                            <!-- Solution Card 1 -->
-                            <div class="bg-slate-800 rounded-2xl p-8 border border-slate-700 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 animate-on-scroll" data-delay="100">
-                                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center text-accent mb-4 ring-2 ring-accent/50"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18v-6h6"/></svg></div>
-                                <h3 class="text-xl font-bold text-white" id="sol-c1-title">وكيل آلي 24/7</h3>
-                                <p class="text-slate-400 mt-3 text-sm leading-relaxed" id="sol-c1-desc">روبوت محادثة متطور يستقبل الطلبات ويؤكدها فوراً عبر Chatwoot/Typebot.</p>
-                            </div>
-                            <!-- Solution Card 2 -->
-                            <div class="bg-slate-800 rounded-2xl p-8 border border-slate-700 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 animate-on-scroll" data-delay="200">
-                                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center text-accent mb-4 ring-2 ring-accent/50"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.74 1.74"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.74-1.74"/></svg></div>
-                                <h3 class="text-xl font-bold text-white" id="sol-c2-title">أتمتة سير العمل (n8n)</h3>
-                                <p class="text-slate-400 mt-3 text-sm leading-relaxed" id="sol-c2-desc">تحويل المحادثة المسجلة مباشرة إلى مهمة مجدولة لفرق الجمع باستخدام n8n.</p>
-                            </div>
-                            <!-- Solution Card 3 -->
-                            <div class="bg-slate-800 rounded-2xl p-8 border border-slate-700 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 animate-on-scroll" data-delay="300">
-                                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center text-accent mb-4 ring-2 ring-accent/50"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 18V6"/></svg></div>
-                                <h3 class="text-xl font-bold text-white" id="sol-c3-title">صلاحية وصول كاملة</h3>
-                                <p class="text-slate-400 mt-3 text-sm leading-relaxed" id="sol-c3-desc">بنية تحتية على خادمك الخاص تمنحك تحكماً كاملاً في بياناتك وأمنك.</p>
-                            </div>
-                        </div>
-
-                        <!-- Steps Section (New Polish: Timeline Look) -->
-                        <div class="mt-20">
-                            <h3 class="text-2xl font-bold text-center mb-12 animate-on-scroll" data-delay="400" id="steps-title">آلية عمل النظام (3 خطوات)</h3>
-                            <div class="relative max-w-4xl mx-auto">
-                                <!-- Timeline Line (CSS line) -->
-                                <div class="absolute inset-y-0 right-1/2 w-1 bg-slate-800 md:right-auto md:left-1/2 transform translate-x-1/2 hidden md:block"></div>
-
-                                <!-- Step 1 (Right/RTL) -->
-                                <div class="mb-8 flex justify-end md:contents animate-on-scroll" data-delay="500">
-                                    <div class="w-full md:w-1/2 p-4 md:p-0 md:pl-8">
-                                        <div class="bg-primary/10 border-r-4 border-primary rounded-xl p-6 text-right shadow-lg">
-                                            <h4 class="text-xl font-bold text-white mb-2" id="step-1-title">1. العميل يطلب الخدمة</h4>
-                                            <p class="text-slate-300 text-sm" id="step-1-desc">يدخل العميل إلى موقعك ويضغط على زر "تحدث معنا" أو يرسل رسالة واتساب.</p>
-                                        </div>
-                                    </div>
-                                    <div class="hidden md:flex items-center justify-center w-8 h-8 bg-primary rounded-full absolute right-1/2 md:right-1/2 transform translate-x-1/2"></div>
-                                </div>
-                                
-                                <!-- Step 2 (Left/LTR) -->
-                                <div class="mb-8 flex justify-start md:contents animate-on-scroll" data-delay="600">
-                                    <div class="w-full md:w-1/2 p-4 md:p-0 md:pr-8 md:order-2">
-                                        <div class="bg-slate-800 border-l-4 border-accent rounded-xl p-6 text-left shadow-lg">
-                                            <h4 class="text-xl font-bold text-white mb-2" id="step-2-title">2. وكيل AI يسجل البيانات</h4>
-                                            <p class="text-slate-300 text-sm" id="step-2-desc">البوت المدعوم بـ Typebot يرد فوراً، ويسجل نوع، موقع، وزمن طلب الجمع.</p>
-                                        </div>
-                                    </div>
-                                    <div class="hidden md:flex items-center justify-center w-8 h-8 bg-accent rounded-full absolute right-1/2 md:left-1/2 transform -translate-x-1/2 md:order-1"></div>
-                                </div>
-                                
-                                <!-- Step 3 (Right/RTL) -->
-                                <div class="mb-8 flex justify-end md:contents animate-on-scroll" data-delay="700">
-                                    <div class="w-full md:w-1/2 p-4 md:p-0 md:pl-8">
-                                        <div class="bg-primary/10 border-r-4 border-primary rounded-xl p-6 text-right shadow-lg">
-                                            <h4 class="text-xl font-bold text-white mb-2" id="step-3-title">3. الأتمتة تُنشئ المهمة</h4>
-                                            <p class="text-slate-300 text-sm" id="step-3-desc">سير عمل n8n يحول البيانات المسجلة إلى مهمة مؤكدة ومجدولة في نظام إدارة فرقك.</p>
-                                        </div>
-                                    </div>
-                                    <div class="hidden md:flex items-center justify-center w-8 h-8 bg-primary rounded-full absolute right-1/2 md:right-1/2 transform translate-x-1/2"></div>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                
-                <!-- Services Section (Pricing - Renamed to Deployment Model) -->
-                <section id="services" class="py-24 bg-white border-t border-slate-100">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div class="mb-16 text-center animate-on-scroll" data-delay="0">
-                            <h2 class="text-3xl font-bold text-slate-900 mb-2" id="serv-title">اختر نموذج النشر والتحكم</h2>
-                            <p class="text-slate-500 max-w-2xl mx-auto font-light" id="serv-subtitle">نحن نضمن لك أقصى درجات السيطرة على نظامك وبياناتك.</p>
-                        </div>
-                        <div class="grid lg:grid-cols-2 gap-8">
-                            <!-- Managed (Now: Full-Control Deployment) -->
-                            <div class="bg-slate-50 rounded-2xl p-8 border border-slate-200 hover:border-primary transition-all duration-300 animate-on-scroll" data-delay="100">
-                                <h3 class="text-xl font-bold text-slate-900" id="serv-s-title">نشر على خادمك الخاص (VPS)</h3>
-                                <p class="text-slate-900 text-sm font-semibold mt-1 uppercase tracking-wider" id="serv-s-price">دفعة لمرة واحدة</p>
-                                <p class="text-slate-500 my-6 text-sm leading-relaxed" id="serv-s-desc">الحل الأمثل للشركات التي تحتاج إلى امتلاك البنية التحتية والتحكم الكامل في الخصوصية.</p>
-                                <ul class="space-y-4 mb-8 text-sm text-slate-600" id="serv-s-list">
-                                    <li class="flex items-center gap-3"><svg class="text-primary" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> التثبيت على خادمك الخاص (VPS)</li>
-                                    <li class="flex items-center gap-3"><svg class="text-primary" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> صلاحيات وصول كاملة (Root Access)</li>
-                                    <li class="flex items-center gap-3"><svg class="text-primary" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> تدريب ودعم فني لـ 30 يوماً</li>
-                                </ul>
-                                <button class="w-full py-3 bg-primary text-white rounded-lg font-bold text-sm hover:bg-green-800 transition-all shadow-md shadow-primary/20" id="serv-s-cta" onclick="setView('contact')">احجز خدمة النشر</button>
-                            </div>
-                            
-                            <!-- Self-Hosted (Now: Maintenance & Updates Package) -->
-                            <div class="bg-slate-50 rounded-2xl p-8 border border-slate-200 hover:border-primary transition-all duration-300 animate-on-scroll" data-delay="200">
-                                <h3 class="text-xl font-bold text-slate-900" id="serv-m-title">خدمة الصيانة والتحديثات</h3>
-                                <p class="text-slate-900 text-sm font-semibold mt-1 uppercase tracking-wider" id="serv-m-price">اشتراك شهري (اختياري)</p>
-                                <p class="text-slate-500 my-6 text-sm leading-relaxed" id="serv-m-desc">لا تقلق بشأن الصيانة! نحن نتولى التحديثات الأمنية والتطويرات النظامية الشهرية.</p>
-                                <ul class="space-y-4 mb-8 text-sm text-slate-600" id="serv-m-list">
-                                    <li class="flex items-center gap-3"><svg class="text-slate-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> مراقبة الخادم على مدار الساعة</li>
-                                    <li class="flex items-center gap-3"><svg class="text-slate-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> التحديثات الأمنية الشهرية</li>
-                                    <li class="flex items-center gap-3"><svg class="text-slate-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> إعداد نسخ احتياطي آلي</li>
-                                </ul>
-                                <button class="w-full py-3 bg-white border border-slate-200 text-slate-700 rounded-lg font-medium text-sm hover:border-primary transition-all" id="serv-m-cta" onclick="setView('contact')">استفسر عن الباقة</button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Final CTA Section (New CTA) -->
-                <section class="py-20 bg-slate-900 text-white">
-                    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-on-scroll" data-delay="0">
-                        <h2 class="text-3xl font-bold mb-4" id="final-cta-title">هل أنت جاهز للتحول إلى الجيل الأخضر في الإدارة؟</h2>
-                        <p class="text-slate-400 mb-8 max-w-2xl mx-auto" id="final-cta-subtitle">لن تعود لطرق الإدارة القديمة بعد تجربة نظام الأتمتة المبتكر.</p>
-                        <button class="bg-accent text-slate-900 px-8 py-4 rounded-full font-extrabold text-lg hover:bg-sky-300 transition-all shadow-lg shadow-accent/40" onclick="openChat()" id="final-cta-button">
-                            💬 ابدأ محادثة الأتمتة الآن
-                        </button>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Contact View (Kept for navigation function) -->
-            <div id="contact-view" class="hidden">
-                <section class="pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto min-h-[80vh]">
-                    <!-- Contact Form content is kept as is -->
-                    <div class="grid md:grid-cols-2 gap-16">
-                        <div>
-                            <h1 class="text-4xl font-bold text-slate-900 mb-4" id="con-title">تواصل معنا</h1>
-                            <p class="text-slate-500 mb-12 text-lg font-light" id="con-subtitle">هل لديك أسئلة حول خدمات النشر لدينا؟ نحن هنا للمساعدة.</p>
-                            <div class="space-y-8">
-                                <div class="flex items-start gap-4">
-                                    <div class="p-3 bg-slate-100 rounded-full text-slate-900"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
-                                    <div>
-                                        <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400 mb-1">Email</h4>
-                                        <p class="text-slate-900 font-medium">hello@aisaas.site</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-slate-50 p-8 rounded-3xl border border-slate-100">
-                            <form id="contact-form" class="space-y-6" onsubmit="handleContact(event)">
-                                <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2" id="label-name">الاسم</label>
-                                    <input type="text" required class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-slate-900 transition-colors">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2" id="label-email">البريد الإلكتروني</label>
-                                    <input type="email" required class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-slate-900 transition-colors">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2" id="label-msg">الرسالة</label>
-                                    <textarea rows="4" required class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-slate-900 transition-colors resize-none"></textarea>
-                                </div>
-                                <button type="submit" class="w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-green-800 transition-all flex items-center justify-center gap-2" id="btn-send">
-                                    إرسال الرسالة
-                                </button>
-                            </form>
-                            <div id="form-success" class="hidden h-full flex flex-col items-center justify-center text-center py-12">
-                                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-                                </div>
-                                <p class="text-lg font-medium text-slate-900" id="txt-success">شكراً لك! سنرد عليك في أقرب وقت ممكن.</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </main>
-
-        <!-- Footer -->
-        <footer class="bg-slate-900 text-slate-500 py-16 border-t border-slate-800">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 justify-between items-center gap-8">
-                <div>
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="w-6 h-6 bg-primary rounded flex items-center justify-center text-white text-[10px]">♻️</div>
-                        <span class="font-bold text-base text-white">Eco-CRM</span>
-                    </div>
-                    <p class="text-sm max-w-xs text-slate-400" id="footer-desc">تمكين الشركات من خلال الأتمتة في إدارة النفايات.</p>
-                </div>
-                <div class="md:text-left text-right">
-                    <p class="text-sm font-medium text-white mb-1" id="footer-rights">© 2026 Eco-CRM. جميع الحقوق محفوظة.</p>
-                    <p class="text-xs text-slate-600 italic font-medium" id="footer-template">تصميم وهندسة: شريكك AI</p>
-                </div>
-            </div>
-        </footer>
-    </div>
-
-    <script>
-        // --- محتوى النصوص (Eco-CRM Content) ---
-        const content = {
-            en: {
-                dir: 'ltr',
-                nav: { home: "Home", features: "Challenges", solution: "Solution", contact: "Contact", cta: "Start Now" },
-                hero: { badge: "The Green Generation in Automation", title: "Smart CRM System for **Waste Management** with Full Automation", subtitle: "Stop the clutter and lost calls. Our system receives, automates, and schedules requests 24/7 with no human intervention.", cta1: "Start Automating Now", cta2: "View System Details" },
-                pain: { title: "Challenges Our System Solves", subtitle: "Our system is designed to close the gaps caused by traditional methods of managing waste collection requests.", c1t: "Non-Stop Calls", c1d: "The customer service team is exhausted by repetitive requests all day long.", c2t: "Lost/Forgotten Requests", c2d: "Loss of some collection requests due to manual recording or poor internal communication.", c3t: "Late & Unprofessional Response", c3d: "Delayed responses outside working hours, reducing service quality.", c4t: "Dissatisfied Customers", c4d: "A feeling that the system is underdeveloped and unable to meet requests quickly." },
-                sol: { title: "The Solution: A Fully Integrated Smart Eco-CRM System", subtitle: "Automate chats with Chatwoot, workflows with n8n, and bot interfaces with Typebot.", c1t: "24/7 Automated Agent", c1d: "A sophisticated chatbot receives and instantly confirms requests via Chatwoot/Typebot.", c2t: "Workflow Automation (n8n)", c2d: "n8n workflow converts the logged conversation directly into a scheduled task for your collection teams.", c3t: "Full Root Access", c3d: "Infrastructure on your private server gives you full control over your data and security." },
-                steps: { title: "System Mechanism (3 Steps)", t1: "1. Customer Requests Service", d1: "The customer visits your site and clicks the 'Chat with Us' button or sends a WhatsApp message.", t2: "2. AI Agent Logs Data", d2: "The Typebot-powered bot responds instantly, logging the type, location, and time of the collection request.", t3: "3. Automation Creates Task", d3: "The n8n workflow converts the logged data into a confirmed and scheduled task in your team management system." },
-                metrics: { v1: "99.9%", l1: "Uptime", v2: "10x", l2: "Faster Response", v3: "0%", l3: "Lost Requests", v4: "24/7", l4: "Automated Agent" },
-                final: { title: "Ready for the Green Generation in Management?", subtitle: "You won't go back to old management ways after experiencing our innovative automation system.", button: "💬 Start Automating Chat Now" },
-                con: { title: "Get in Touch", sub: "Questions about our deployment services? We are here to help.", n: "Name", e: "Email", m: "Message", s: "Send Message", ok: "Thank you! We'll reply soon." },
-                foot: { desc: "Empowering businesses through automation in waste management.", r: "© 2026 Eco-CRM. All rights reserved.", t: "Design & Engineering by Your AI Partner" }
-            },
-            ar: {
-                dir: 'rtl',
-                nav: { home: "الرئيسية", features: "التحديات", solution: "الحل", contact: "تواصل", cta: "ابدأ الآن" },
-                hero: { badge: "الجيل الأخضر في الأتمتة", title: "نظام CRM ذكي لـ **إدارة النفايات** بأتمتة كاملة", subtitle: "توقف عن الفوضى والمكالمات الضائعة. نظامنا يستقبل الطلبات، يؤتمتها، ويجدولها **24/7** بدون تدخل بشري.", cta1: "ابدأ الأتمتة الآن", cta2: "شاهد النظام بالتفصيل" },
-                pain: { title: "التحديات التي يحلها نظامنا", subtitle: "نظامنا مصمم لسد الفجوات التي تسببها الطرق التقليدية لإدارة طلبات جمع النفايات.", c1t: "مكالمات لا تتوقف", c1d: "فريق خدمة العملاء منهك بالردود المتكررة على نفس الاستفسارات طوال اليوم.", c2t: "طلبات تضيع وتُنسى", c2d: "فقدان بعض طلبات الجمع بسبب التسجيل اليدوي أو سوء التواصل الداخلي.", c3t: "رد متأخر وغير احترافي", c3d: "تأخر الرد على العملاء خارج أوقات العمل الرسمية، مما يقلل من جودة الخدمة.", c4t: "عملاء غير راضين", c4d: "الشعور بأن النظام غير متطور وعدم القدرة على تلبية الطلبات بسرعة وكفاءة." },
-                sol: { title: "الحل: نظام Eco-CRM ذكي متكامل", subtitle: "أتمتة المحادثات مع Chatwoot، سير العمل مع n8n، وواجهات البوت مع Typebot.", c1t: "وكيل آلي 24/7", c1d: "روبوت محادثة متطور يستقبل الطلبات ويؤكدها فوراً عبر Chatwoot/Typebot.", c2t: "أتمتة سير العمل (n8n)", c2d: "سير عمل n8n يحول المحادثة المسجلة مباشرة إلى مهمة مجدولة لفرق الجمع.", c3t: "صلاحية وصول كاملة", c3d: "بنية تحتية على خادمك الخاص تمنحك تحكماً كاملاً في بياناتك وأمنك." },
-                steps: { title: "آلية عمل النظام (3 خطوات)", t1: "1. العميل يطلب الخدمة", d1: "يدخل العميل إلى موقعك ويضغط على زر 'تحدث معنا' أو يرسل رسالة واتساب.", t2: "2. وكيل AI يسجل البيانات", d2: "البوت المدعوم بـ Typebot يرد فوراً، ويسجل نوع، موقع، وزمن طلب الجمع.", t3: "3. الأتمتة تُنشئ المهمة", d3: "سير عمل n8n يحول البيانات المسجلة إلى مهمة مؤكدة ومجدولة في نظام إدارة فرقك." },
-                metrics: { v1: "99.9%", l1: "وقت تشغيل", v2: "10x", l2: "سرعة الاستجابة", v3: "0%", l3: "طلبات ضائعة", v4: "24/7", l4: "وكيل آلي" },
-                final: { title: "هل أنت جاهز للتحول إلى الجيل الأخضر في الإدارة؟", subtitle: "لن تعود لطرق الإدارة القديمة بعد تجربة نظام الأتمتة المبتكر.", button: "💬 ابدأ محادثة الأتمتة الآن" },
-                con: { title: "تواصل معنا", sub: "هل لديك أسئلة حول خدمات النشر لدينا؟ نحن هنا للمساعدة.", n: "الاسم", e: "البريد الإلكتروني", m: "الرسالة", s: "إرسال الرسالة", ok: "شكراً لك! سنرد عليك في أقرب وقت ممكن." },
-                foot: { desc: "تمكين الشركات من خلال الأتمتة في إدارة النفايات.", r: "© 2026 Eco-CRM. جميع الحقوق محفوظة.", t: "تصميم وهندسة: شريكك AI" }
-            },
-            fr: {
-                 dir: 'ltr',
-                nav: { home: "Accueil", features: "Défis", solution: "Solution", contact: "Contact", cta: "Démarrer" },
-                hero: { badge: "La Génération Verte de l'Automation", title: "Système CRM Intelligent pour la **Gestion des Déchets**", subtitle: "Arrêtez le désordre et les appels perdus. Notre système reçoit, automatise et planifie les demandes 24/7 sans intervention humaine.", cta1: "Commencer l'Automation", cta2: "Voir le Système en Détail" },
-                pain: { title: "Défis Résolus par Notre Système", subtitle: "Notre système est conçu pour combler les lacunes causées par les méthodes traditionnelles de gestion des demandes de collecte.", c1t: "Appels Non-Stop", c1d: "L'équipe du service client est épuisée par des demandes répétitives toute la journée.", c2t: "Demandes Perdues/Oubliées", c2d: "Perte de demandes de collecte due à l'enregistrement manuel ou à une mauvaise communication interne.", c3t: "Réponse Tardive et Non Professionnelle", c3d: "Retards de réponse en dehors des heures de travail, réduisant la qualité du service.", c4t: "Clients Insatisfaits", c4d: "Sentiment que le système n'est pas développé et incapable de répondre rapidement aux demandes." },
-                sol: { title: "La Solution: Eco-CRM Smart System", subtitle: "Automatisez les chats avec Chatwoot, les flux de travail avec n8n et les interfaces bot avec Typebot.", c1t: "Agent Automatisé 24/7", c1d: "Un chatbot sophistiqué reçoit et confirme instantanément les demandes via Chatwoot/Typebot.", c2t: "Automation de Flux (n8n)", c2d: "Le flux de travail n8n convertit la conversation enregistrée directement en une tâche planifiée pour vos équipes de collecte.", c3t: "Accès Root Complet", c3d: "L'infrastructure sur votre propre serveur vous donne un contrôle total sur vos données et votre sécurité." },
-                steps: { title: "Mécanisme du Système (3 Étapes)", t1: "1. Le Client Demande le Service", d1: "Le client visite votre site et clique sur 'Chattez avec nous' ou envoie un message WhatsApp.", t2: "2. L'Agent IA Enregistre les Données", d2: "Le bot Typebot répond instantanément, enregistrant le type, l'emplacement et l'heure de la demande.", t3: "3. L'Automation Crée la Tâche", d3: "Le flux n8n convertit les données enregistrées en une tâche confirmée et planifiée dans votre système de gestion d'équipe." },
-                metrics: { v1: "99.9%", l1: "Temps de Fonctionnement", v2: "10x", l2: "Réponse Plus Rapide", v3: "0%", l3: "Demandes Perdues", v4: "24/7", l4: "Agent Automatisé" },
-                final: { title: "Prêt pour la Génération Verte en Gestion?", subtitle: "Vous ne reviendrez pas aux anciennes méthodes après avoir expérimenté notre système d'automatisation innovant.", button: "💬 Démarrer la Conversation d'Automation" },
-                con: { title: "Contactez-nous", sub: "Des questions sur nos services de déploiement? Nous sommes là pour vous aider.", n: "Nom", e: "E-mail", m: "Message", s: "Envoyer le Message", ok: "Merci! Nous vous répondrons bientôt." },
-                foot: { desc: "Autonomiser les entreprises grâce à l'automatisation de la gestion des déchets.", r: "© 2026 Eco-CRM. Tous droits réservés.", t: "Conception & Ingénierie par Votre Partenaire IA" }
-            }
-        };
-
-        let currentLang = 'ar';
-        let currentView = 'home';
-        
-        // --- دالة المراقبة (Observer Function) ---
-        function initScrollAnimations() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            document.querySelectorAll('.animate-on-scroll').forEach(element => {
-                const delay = element.getAttribute('data-delay');
-                if (delay) {
-                    element.style.animationDelay = `${delay}ms`;
-                }
-                observer.observe(element);
-            });
-        }
-        
-        // --- دالة التحكم بالنصوص (Language Function) ---
-        function setLang(l) {
-            currentLang = l;
-            const t = content[l];
-            document.documentElement.lang = l;
-            document.documentElement.dir = t.dir;
-            document.body.className = t.dir === 'rtl' ? 'rtl' : 'ltr';
-            
-            // --- تحديث النصوص في شريط التنقل ---
-            document.getElementById('nav-home').innerText = t.nav.home;
-            document.getElementById('nav-features').innerText = t.nav.features;
-            document.getElementById('nav-solution').innerText = t.nav.solution;
-            document.getElementById('nav-contact').innerText = t.nav.contact;
-            document.getElementById('nav-cta').innerText = t.nav.cta;
-            
-            // --- تحديث النصوص في قسم Hero ---
-            document.getElementById('hero-badge').innerText = t.hero.badge;
-            document.getElementById('hero-title').innerText = t.hero.title;
-            document.getElementById('hero-subtitle').innerText = t.hero.subtitle;
-            document.getElementById('hero-cta-primary').innerText = t.hero.cta1;
-            document.getElementById('hero-cta-secondary').innerText = t.hero.cta2;
-            
-            // --- تحديث المقاييس (Metrics) ---
-            document.getElementById('metric-1-value').innerText = t.metrics.v1;
-            document.getElementById('metric-1-label').innerText = t.metrics.l1;
-            document.getElementById('metric-2-value').innerText = t.metrics.v2;
-            document.getElementById('metric-2-label').innerText = t.metrics.l2;
-            document.getElementById('metric-3-value').innerText = t.metrics.v3;
-            document.getElementById('metric-3-label').innerText = t.metrics.l3;
-            document.getElementById('metric-4-value').innerText = t.metrics.v4;
-            document.getElementById('metric-4-label').innerText = t.metrics.l4;
-
-            // --- تحديث قسم التحديات (Pain) ---
-            document.getElementById('pain-title').innerText = t.pain.title;
-            document.getElementById('pain-subtitle').innerText = t.pain.subtitle;
-            document.getElementById('pain-c1-title').innerText = t.pain.c1t;
-            document.getElementById('pain-c1-desc').innerText = t.pain.c1d;
-            document.getElementById('pain-c2-title').innerText = t.pain.c2t;
-            document.getElementById('pain-c2-desc').innerText = t.pain.c2d;
-            document.getElementById('pain-c3-title').innerText = t.pain.c3t;
-            document.getElementById('pain-c3-desc').innerText = t.pain.c3d;
-            document.getElementById('pain-c4-title').innerText = t.pain.c4t;
-            document.getElementById('pain-c4-desc').innerText = t.pain.c4d;
-
-            // --- تحديث قسم الحلول (Solution) ---
-            document.getElementById('solution-title').innerText = t.sol.title;
-            document.getElementById('solution-subtitle').innerText = t.sol.subtitle;
-            document.getElementById('sol-c1-title').innerText = t.sol.c1t;
-            document.getElementById('sol-c1-desc').innerText = t.sol.c1d;
-            document.getElementById('sol-c2-title').innerText = t.sol.c2t;
-            document.getElementById('sol-c2-desc').innerText = t.sol.c2d;
-            document.getElementById('sol-c3-title').innerText = t.sol.c3t;
-            document.getElementById('sol-c3-desc').innerText = t.sol.c3d;
-            
-            // --- تحديث خطوات العمل (Steps) ---
-            document.getElementById('steps-title').innerText = t.steps.title;
-            document.getElementById('step-1-title').innerText = t.steps.t1;
-            document.getElementById('step-1-desc').innerText = t.steps.d1;
-            document.getElementById('step-2-title').innerText = t.steps.t2;
-            document.getElementById('step-2-desc').innerText = t.steps.d2;
-            document.getElementById('step-3-title').innerText = t.steps.t3;
-            document.getElementById('step-3-desc').innerText = t.steps.d3;
-            
-            // --- تحديث قسم الخدمات/النشر ---
-            document.getElementById('serv-title').innerText = t.nav.pricing;
-            document.getElementById('serv-subtitle').innerText = t.serv.sub;
-            document.getElementById('serv-s-title').innerText = t.serv.st;
-            document.getElementById('serv-s-price').innerText = t.serv.sp;
-            document.getElementById('serv-s-desc').innerText = t.serv.sd;
-            // ... (تحديث قائمة UL يحتاج إلى إعادة هيكلة HTML أو JS معقدة، لكن نصوص الأزرار كافية)
-            document.getElementById('serv-s-cta').innerText = t.serv.sc;
-            document.getElementById('serv-m-title').innerText = t.serv.mt;
-            document.getElementById('serv-m-price').innerText = t.serv.mp;
-            document.getElementById('serv-m-desc').innerText = t.serv.md;
-            document.getElementById('serv-m-cta').innerText = t.serv.mc;
-
-            // --- تحديث الـ CTA النهائي ---
-            document.getElementById('final-cta-title').innerText = t.final.title;
-            document.getElementById('final-cta-subtitle').innerText = t.final.subtitle;
-            document.getElementById('final-cta-button').innerText = t.final.button;
-
-            // --- تحديث النصوص في صفحة التواصل (Contact) ---
-            document.getElementById('con-title').innerText = t.con.title;
-            document.getElementById('con-subtitle').innerText = t.con.sub;
-            document.getElementById('label-name').innerText = t.con.n;
-            document.getElementById('label-email').innerText = t.con.e;
-            document.getElementById('label-msg').innerText = t.con.m;
-            document.getElementById('btn-send').innerText = t.con.s;
-            document.getElementById('txt-success').innerText = t.con.ok;
-            
-            // --- تحديث نصوص التذييل (Footer) ---
-            document.getElementById('footer-desc').innerText = t.foot.desc;
-            document.getElementById('footer-rights').innerText = t.foot.r;
-            document.getElementById('footer-template').innerText = t.foot.t;
-
-            // --- تحديث أزرار اللغة (Language Btn classes) ---
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('bg-primary', 'text-white');
-                btn.classList.add('text-slate-400');
-            });
-            document.querySelector(`.lang-btn.${l}`).classList.add('bg-primary', 'text-white');
-            document.querySelector(`.lang-btn.${l}`).classList.remove('text-slate-400');
-            
-            // بعد تحديث اللغة، يجب تحديث Chatwoot SDK
-            if(window.$chatwoot) {
-                window.$chatwoot.setLocale(l);
-            }
-        }
-
-        // --- دالة التحكم بالتنقل (View Function) ---
-        function setView(v) {
-            currentView = v;
-            document.getElementById('home-view').classList.toggle('hidden', v !== 'home');
-            document.getElementById('contact-view').classList.toggle('hidden', v !== 'contact');
-            
-            // تحديث الكلاسات النشطة
-            document.getElementById('nav-home').classList.toggle('font-bold', v === 'home');
-            document.getElementById('nav-contact').classList.toggle('font-bold', v === 'contact');
-            window.scrollTo(0, 0);
-        }
-
-        // --- دالة قائمة الجوال (Mobile Menu) ---
-        function toggleMenu() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
-        }
-
-        // --- دالة التعامل مع نموذج التواصل (Contact Form) ---
-        function handleContact(e) {
-            e.preventDefault();
-            document.getElementById('contact-form').classList.add('hidden');
-            document.getElementById('form-success').classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('contact-form').classList.remove('hidden');
-                document.getElementById('form-success').classList.add('hidden');
-                document.getElementById('contact-form').reset();
-            }, 5000);
-        }
-        
-        // --- دالة فتح الشات (مفيدة لزر CTA) ---
-        function openChat() {
-            if(window.$chatwoot) {
-                window.$chatwoot.toggle();
-            } else {
-                // قد ينجح هذا إذا لم يتم تحميل Chatwoot بعد
-                document.getElementById('nav-cta').click(); 
-            }
-        }
-
-        // --- تحميل Chatwoot SDK (يجب أن يتم تحديثه برابطك وتوكنك الفعلي) ---
-        (function(d,t) {
-            var BASE_URL="https://chatwoot.panel.oneveri.com"; // <-- تأكد من رابطك الفعلي
-            var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-            g.src=BASE_URL+"/packs/js/sdk.js";
-            g.defer = true; g.async = true;
-            g.onload=function(){
-                window.chatwootSDK.run({
-                    websiteToken: '1scxDScNXpdAgE6p4Wzcy9zS', // <-- تأكد من التوكن الفعلي
-                    baseUrl: BASE_URL,
-                    locale: currentLang,
-                    position: currentLang === 'ar' ? 'left' : 'right'
-                })
-            }
-            s.parentNode.insertBefore(g,s);
-        })(document,"script");
-
-        // --- نقطة الدخول (Initialization) ---
-        window.onload = function() {
-             // 1. تطبيق اللغة الافتراضية
-             setLang(currentLang);
-             // 2. تفعيل الأنميشنز على التمرير
-             initScrollAnimations();
-        };
-    </script>
+    <!-- 6. تحميل كود التطبيق المجمع (app.js) -->
+    <script src="./app.js"></script>
 </body>
 </html>
